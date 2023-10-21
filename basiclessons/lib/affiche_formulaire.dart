@@ -5,6 +5,7 @@ class AfficheFormulaire extends StatefulWidget {
   final String date;
   final int pivotSexe;
   final double taille;
+  final int? poid;
   final List<Map<String, dynamic>> techno;
 
   final String nom;
@@ -19,7 +20,8 @@ class AfficheFormulaire extends StatefulWidget {
       required this.sexe,
       required this.pivotSexe,
       required this.taille,
-      required this.techno});
+      required this.techno ,
+      required this.poid});
 
   @override
   State<AfficheFormulaire> createState() => _AfficheFormulaireState();
@@ -179,10 +181,41 @@ class _AfficheFormulaireState extends State<AfficheFormulaire> {
                           //       : Text('')
                           // ],
                           ),
-                    )
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('POID:'),
+                          Text(widget.poid.toString())
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
+               Container(
+                      margin: EdgeInsets.all(5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('POID:'),
+                          Text('${widget.poid.toString()} kg')
+                        ],
+                      ),
+                    ),
+
+                     Container(
+                      margin: EdgeInsets.all(5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('IMC:'),
+                          Text((widget.poid!/widget.taille).toString())
+                        ],
+                      ),
+                    ),
             ],
           ),
         )

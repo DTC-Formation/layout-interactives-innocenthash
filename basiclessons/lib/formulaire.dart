@@ -28,12 +28,17 @@ class _FormulaireState extends State<Formulaire> {
   TextEditingController nomController = TextEditingController();
   TextEditingController prenomController = TextEditingController();
   TextEditingController loisirController = TextEditingController();
+  TextEditingController poidController = TextEditingController();
 
   String date = "";
 
   String nom = '';
   String prenom = '';
   String loisires = '';
+
+  String poids = '0';
+
+  int? poid;
 
   @override
   void initState() {
@@ -59,7 +64,7 @@ class _FormulaireState extends State<Formulaire> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.star,color: Colors.white),
+            icon: Icon(Icons.star, color: Colors.white),
           ),
         ],
         backgroundColor: Colors.orange,
@@ -108,6 +113,18 @@ class _FormulaireState extends State<Formulaire> {
                 decoration: InputDecoration(
                     hintText: 'Votre prenom',
                     labelText: 'Prenom',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: Colors.black))),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.all(20),
+              child: TextField(
+                controller: poidController,
+                decoration: InputDecoration(
+                    hintText: 'votre poid',
+                    labelText: 'Poid',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide(color: Colors.black))),
@@ -276,8 +293,9 @@ class _FormulaireState extends State<Formulaire> {
                       date = dateInput.text;
 
                       loisires = loisirController.text;
-
+                      poids = poidController.text;
                       active = true;
+                      poid = int.parse(poids);
                     });
                   },
                   child: const Text('Save')),
@@ -293,6 +311,7 @@ class _FormulaireState extends State<Formulaire> {
                     loisires: loisires,
                     sexe: sexe,
                     pivotSexe: pivotSexe,
+                    poid :poid
                   )
                 : const Text('En attente de votre reponse'),
             // SingleChildScrollView(child: Container(child: AfficheFormulaire() ,)) ,
