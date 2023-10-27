@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class AfficheFormulaire extends StatefulWidget {
   final List<String> sexe;
   final String date;
   final int pivotSexe;
   final double taille;
-  final int? poid;
   final List<Map<String, dynamic>> techno;
 
   final String nom;
@@ -20,14 +22,16 @@ class AfficheFormulaire extends StatefulWidget {
       required this.sexe,
       required this.pivotSexe,
       required this.taille,
-      required this.techno ,
-      required this.poid});
+      required this.techno});
 
   @override
   State<AfficheFormulaire> createState() => _AfficheFormulaireState();
 }
 
 class _AfficheFormulaireState extends State<AfficheFormulaire> {
+  String? path;
+  String? pathCouv;
+  XFile? image;
   List<String> techno = [];
 
   List<String> loisires = [];
@@ -41,6 +45,42 @@ class _AfficheFormulaireState extends State<AfficheFormulaire> {
     }
 
     loisires = widget.loisires.split(',');
+  }
+
+  Future<XFile?> pickImage() async {
+    final picker = ImagePicker();
+
+    return await picker.pickImage(source: ImageSource.gallery);
+    //  ou gallery
+  }
+
+  Future<String?> pickedFile() async {
+    final pickedFile = await pickImage();
+
+    if (pickedFile != null) {
+      setState(() {
+        path = pickedFile.path;
+      });
+    }
+    return null;
+  }
+
+  Future<XFile?> pickImageCouv() async {
+    final picker = ImagePicker();
+
+    return await picker.pickImage(source: ImageSource.gallery);
+    //  ou gallery
+  }
+
+  Future<String?> pickedFileCouv() async {
+    final pickedFile = await pickImage();
+
+    if (pickedFile != null) {
+      setState(() {
+        pathCouv = pickedFile.path;
+      });
+    }
+    return null;
   }
 
   @override
@@ -61,22 +101,88 @@ class _AfficheFormulaireState extends State<AfficheFormulaire> {
           children: [
             Container(
               height: 250,
-              // width: double.infinity,
-              child: Image.asset('assets/svetjekolem--js8KGQLfhw-unsplash.jpg'),
+              width: double.infinity,
+              child: pathCouv != null
+                            ? Image.file(
+                                File(pathCouv!),
+                                fit: BoxFit.cover,
+                              )
+                            : const Padding(
+                                padding: EdgeInsets.all(28.0),
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text('Selectionnez une photos',
+                                      style: TextStyle(color: Colors.white)),
+                                ),
+                              ),
             ),
             Container(
               margin: EdgeInsets.only(top: 50),
               height: 250,
+              // color: Colors.amber,
+
               // width: double.infinity,
               // color: Colors.amber,
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: ClipOval(
-                    child: Image.asset(
-                  'assets/arteum-ro-oaMFDtSqHXY-unsplash.jpg',
-                  cacheHeight: 100,
-                  cacheWidth: 100,
-                )),
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 116, 116, 116),
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(width: 5, color: Colors.white)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: path != null
+                            ? Image.file(
+                                File(path!),
+                                fit: BoxFit.cover,
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.all(28.0),
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text('Selectionnez une photos',
+                                      style: TextStyle(color: Colors.white)),
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(108.0),
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Container(
+                        child: IconButton(
+                          onPressed: () {
+                            pickedFile();
+                          },
+                          icon: const Icon(Icons.add_a_photo,
+                              size: 30, color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 70.0),
+                    child: Align(
+                      alignment: Alignment.bottomRight,
+                      child: Container(
+                        child: IconButton(
+                          onPressed: () {
+                            pickedFileCouv();
+                          },
+                          icon: const Icon(Icons.photo_camera,
+                              size: 30, color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -181,41 +287,10 @@ class _AfficheFormulaireState extends State<AfficheFormulaire> {
                           //       : Text('')
                           // ],
                           ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.all(5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('POID:'),
-                          Text(widget.poid.toString())
-                        ],
-                      ),
-                    ),
+                    )
                   ],
                 ),
               ),
-               Container(
-                      margin: EdgeInsets.all(5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('POID:'),
-                          Text('${widget.poid.toString()} kg')
-                        ],
-                      ),
-                    ),
-
-                     Container(
-                      margin: EdgeInsets.all(5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('IMC:'),
-                          Text((widget.poid!/widget.taille).toString())
-                        ],
-                      ),
-                    ),
             ],
           ),
         )
