@@ -50,7 +50,7 @@ class _AfficheFormulaireState extends State<AfficheFormulaire> {
   Future<XFile?> pickImage() async {
     final picker = ImagePicker();
 
-    return await picker.pickImage(source: ImageSource.gallery);
+    return await picker.pickImage(source: ImageSource.camera);
     //  ou gallery
   }
 
@@ -68,7 +68,7 @@ class _AfficheFormulaireState extends State<AfficheFormulaire> {
   Future<XFile?> pickImageCouv() async {
     final picker = ImagePicker();
 
-    return await picker.pickImage(source: ImageSource.gallery);
+    return await picker.pickImage(source: ImageSource.camera);
     //  ou gallery
   }
 
