@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class AfficheFormulaire extends StatefulWidget {
   final List<String> sexe;
@@ -50,7 +51,7 @@ class _AfficheFormulaireState extends State<AfficheFormulaire> {
   Future<XFile?> pickImage() async {
     final picker = ImagePicker();
 
-    return await picker.pickImage(source: ImageSource.camera);
+    return await picker.pickImage(source: ImageSource.gallery);
     //  ou gallery
   }
 
@@ -68,7 +69,7 @@ class _AfficheFormulaireState extends State<AfficheFormulaire> {
   Future<XFile?> pickImageCouv() async {
     final picker = ImagePicker();
 
-    return await picker.pickImage(source: ImageSource.camera);
+    return await picker.pickImage(source: ImageSource.gallery);
     //  ou gallery
   }
 
@@ -81,6 +82,33 @@ class _AfficheFormulaireState extends State<AfficheFormulaire> {
       });
     }
     return null;
+  }
+
+  File? pathCouCrop;
+  Future  _cropImage() async {
+    if (pathCouv != null) {
+      CroppedFile? cropped = await ImageCropper()
+          .cropImage(sourcePath: pathCouv!, aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ], uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Crop',
+            cropGridColor: Colors.black,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        IOSUiSettings(title: 'Crop')
+      ]);
+
+      if (cropped != null) {
+        setState(() {
+          pathCouCrop = File(cropped.path);
+        });
+      }
+    }
   }
 
   @override
@@ -102,19 +130,19 @@ class _AfficheFormulaireState extends State<AfficheFormulaire> {
             Container(
               height: 250,
               width: double.infinity,
-              child: pathCouv != null
-                            ? Image.file(
-                                File(pathCouv!),
-                                fit: BoxFit.cover,
-                              )
-                            : const Padding(
-                                padding: EdgeInsets.all(28.0),
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text('Selectionnez une photos',
-                                      style: TextStyle(color: Colors.white)),
-                                ),
-                              ),
+              child: pathCouCrop != null ? Image.file(pathCouCrop!) : pathCouv != null
+                  ? Image.file(
+                      File(pathCouv!),
+                      fit: BoxFit.cover,
+                    )
+                  : const Padding(
+                      padding: EdgeInsets.all(28.0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text('Selectionnez une photos',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                    ),
             ),
             Container(
               margin: EdgeInsets.only(top: 50),
@@ -172,12 +200,23 @@ class _AfficheFormulaireState extends State<AfficheFormulaire> {
                     child: Align(
                       alignment: Alignment.bottomRight,
                       child: Container(
-                        child: IconButton(
-                          onPressed: () {
-                            pickedFileCouv();
-                          },
-                          icon: const Icon(Icons.photo_camera,
-                              size: 30, color: Colors.black),
+                        child: Column(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                pickedFileCouv();
+                              },
+                              icon: const Icon(Icons.photo_camera,
+                                  size: 30, color: Colors.black),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                _cropImage();
+                              },
+                              icon: const Icon(Icons.crop,
+                                  size: 30, color: Colors.black),
+                            ),
+                          ],
                         ),
                       ),
                     ),
